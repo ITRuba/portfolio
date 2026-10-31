@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Cpu, Layout, Database, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { m } from 'framer-motion';
+import { Cpu, Layout, Database, Sparkles } from 'lucide-react';
 import { whatIBuildData } from '../data/projects';
 
 export default function WhatIBuild() {
@@ -20,26 +20,26 @@ export default function WhatIBuild() {
   };
 
   return (
-    <section id="skills" className="py-24 bg-[#FFFFFF]/60 border-y border-[#E8DEDA]">
+    <section id="skills" className="py-24 bg-white/60 border-y border-line">
       <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
         {/* Heading */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="space-y-4"
         >
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#B98286]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-accent-ink">
             Capabilities & Focus
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#292525]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-ink">
             What I Build
           </h2>
-          <p className="text-lg text-[#817575] font-light max-w-2xl">
+          <p className="text-lg text-muted font-light max-w-2xl">
             Bridging technical depth with thoughtful design across three core pillars.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* 3 Large Editorial Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -48,7 +48,7 @@ export default function WhatIBuild() {
             const isHovered = hoveredIdx === idx;
 
             return (
-              <motion.div
+              <m.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -58,18 +58,18 @@ export default function WhatIBuild() {
                 onMouseLeave={() => setHoveredIdx(null)}
                 className={`relative p-8 rounded-3xl border transition-all duration-500 flex flex-col justify-between space-y-8 ${
                   isHovered
-                    ? 'bg-[#F7E8E8]/70 border-[#B98286] shadow-lg -translate-y-2'
-                    : 'bg-[#FBF7F5] border-[#E8DEDA] hover:border-[#E8C8CA]'
+                    ? 'bg-blush/70 border-accent shadow-lg -translate-y-2'
+                    : 'bg-ivory border-line hover:border-blush-strong'
                 }`}
               >
                 {/* Top Bar: Number & Icon */}
                 <div className="flex items-center justify-between">
-                  <span className="font-serif text-3xl font-light text-[#B98286]">
+                  <span className="font-serif text-3xl font-light text-accent-display">
                     {item.number}
                   </span>
                   <div
                     className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300 ${
-                      isHovered ? 'bg-[#B98286] text-[#FFFFFF]' : 'bg-[#FFFFFF] text-[#817575] border border-[#E8DEDA]'
+                      isHovered ? 'bg-accent text-white' : 'bg-white text-muted border border-line'
                     }`}
                   >
                     <IconComp className="w-6 h-6" />
@@ -78,17 +78,17 @@ export default function WhatIBuild() {
 
                 {/* Title & Description */}
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-serif font-bold text-[#292525] tracking-tight">
+                  <h3 className="text-2xl font-serif font-bold text-ink tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-[#817575] leading-relaxed font-light">
+                  <p className="text-sm text-muted leading-relaxed font-light">
                     {item.description}
                   </p>
                 </div>
 
                 {/* Tags List */}
-                <div className="space-y-2 pt-4 border-t border-[#E8DEDA]/80">
-                  <span className="text-[10px] uppercase tracking-wider text-[#817575] font-semibold">
+                <div className="space-y-2 pt-4 border-t border-line/80">
+                  <span className="text-[10px] uppercase tracking-wider text-muted font-semibold">
                     Core Specializations:
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -97,8 +97,8 @@ export default function WhatIBuild() {
                         key={tIdx}
                         className={`px-3 py-1 text-xs rounded-full font-medium transition-colors ${
                           isHovered
-                            ? 'bg-[#FFFFFF] text-[#292525] border border-[#E8C8CA]'
-                            : 'bg-[#FFFFFF] text-[#817575] border border-[#E8DEDA]'
+                            ? 'bg-white text-ink border border-blush-strong'
+                            : 'bg-white text-muted border border-line'
                         }`}
                       >
                         {tag}
@@ -106,7 +106,7 @@ export default function WhatIBuild() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>
