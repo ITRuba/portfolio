@@ -5,7 +5,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import CaseStudyPage from './pages/CaseStudyPage';
 import { projects } from './data/projects';
-import { homeHref, navigate, useHashRoute } from './hooks/useHashRoute';
+import { currentEntryKey, homeHref, navigate, useHashRoute } from './hooks/useHashRoute';
 import { jumpTo, scrollToSection, scrollToTop } from './lib/scroll';
 
 const BASE_TITLE = document.title;
@@ -16,7 +16,11 @@ export default function App() {
   const isProjectPage = Boolean(project);
 
   const mainRef = useRef(null);
-  const homeScrollY = useRef(0);       // where the visitor was on Home
+  const homeScrollY = useRef(0);       // last position on Home (fallback for new Home entries)
+  const entryScroll = useRef(new Map()); // history entry key -> scrollY
+  const renderedEntry = useRef(null);    // key of the entry currently on screen
+  const onProjectPage = useRef(isProjectPage);
+  onProjectPage.current = isProjectPage;
   const pendingSection = useRef(null); // section to reveal after returning Home
   const isFirstRender = useRef(true);
 
@@ -30,22 +34,31 @@ export default function App() {
     if (route.name === 'project' && !project) navigate(homeHref, { replace: true });
   }, [route, project]);
 
-  // Remember the Home scroll position so Back returns the visitor to the same spot.
+  // Remember the scroll position of each history entry so Back/Forward return
+  // the visitor to the exact spot they left on that entry.
   useEffect(() => {
-    if (isProjectPage) return undefined;
-    const onScroll = () => { homeScrollY.current = window.scrollY; };
+    const onScroll = () => {
+      // Attribute the position to the entry that is actually displayed. Scroll
+      // events can arrive after the URL changed but before React re-rendered.
+      if (renderedEntry.current) entryScroll.current.set(renderedEntry.current, window.scrollY);
+      if (!onProjectPage.current) homeScrollY.current = window.scrollY;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isProjectPage]);
+  }, []);
 
   // Route change side effects: scroll position, document title, focus.
   useLayoutEffect(() => {
     const firstRender = isFirstRender.current;
     isFirstRender.current = false;
 
+    const entryKey = currentEntryKey();
+    const saved = entryScroll.current.get(entryKey);
+    renderedEntry.current = entryKey;
+
     if (isProjectPage) {
       document.title = `${project.title} — Case Study · Ruba`;
-      jumpTo(0);
+      jumpTo(saved ?? 0);
       if (!firstRender) document.getElementById('case-study-title')?.focus({ preventScroll: true });
       return;
     }
@@ -61,7 +74,9 @@ export default function App() {
       jumpTo(homeScrollY.current);
       scrollToSection(target);
     } else {
-      jumpTo(homeScrollY.current);
+      // Back/Forward to a known entry -> its own position; a fresh Home entry
+      // (e.g. "Back to All Projects") -> where the visitor last was on Home.
+      jumpTo(saved ?? homeScrollY.current);
     }
     mainRef.current?.focus({ preventScroll: true });
   }, [isProjectPage, project]);

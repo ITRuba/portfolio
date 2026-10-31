@@ -31,11 +31,28 @@ export function navigate(href, { replace = false } = {}) {
   }
 }
 
+/**
+ * Returns a stable id for the current history entry (stored in history.state),
+ * creating one if needed. Used to remember scroll positions per entry, so
+ * Back/Forward return to where the visitor was on that specific entry.
+ */
+export function currentEntryKey() {
+  const state = window.history.state;
+  if (state && typeof state.entryKey === 'string') return state.entryKey;
+  const entryKey = Math.random().toString(36).slice(2);
+  window.history.replaceState({ ...(state || {}), entryKey }, '');
+  return entryKey;
+}
+
 export function useHashRoute() {
   const [route, setRoute] = useState(() => parseHash(window.location.hash));
 
   useEffect(() => {
-    const onChange = () => setRoute(parseHash(window.location.hash));
+    currentEntryKey();
+    const onChange = () => {
+      currentEntryKey(); // new entries get a key as soon as they appear
+      setRoute(parseHash(window.location.hash));
+    };
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
